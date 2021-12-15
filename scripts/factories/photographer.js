@@ -1,7 +1,8 @@
 function photographerFactory(data) {
-    const { name, portrait, city, country, tagline, price } = data;
+    const { name, portrait, city, country, tagline, price, id } = data;
 
     const picture = `assets/photographers/id_photos/${portrait}`;
+    const test = new URL("/photographer.html?id=" + id,window.location.href);
 
     function getUserCardDOM() {
         //DOM elements
@@ -21,7 +22,7 @@ function photographerFactory(data) {
 
         //Adding attributes
         description.setAttribute("aria-label", name + "description");
-        linkBox.setAttribute("href", "");
+        linkBox.setAttribute("href", test);
         linkBox.setAttribute("aria-label", name);
         img.setAttribute("src", picture);
         description.setAttribute("tabindex", "0");
