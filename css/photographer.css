@@ -2,10 +2,35 @@
     display: none;
 }
 
-.photograph-header {
+#photograph-header {
     background-color: #FAFAFA;
     height: 300px;
     margin: 0 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px 0;
+}
+
+#description {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 350px;
+}
+
+#photograph-header img {
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#photograph-header h2 {
+    color: #D3573C;
+    font-size: 2.5rem;
+    margin: 10px 0;
+    font-weight: lighter;
 }
 
 .contact_button {
@@ -73,4 +98,120 @@ form input {
     height: 68px;
     border: none;
     border-radius: 5px;
+}
+
+.location {
+    font-size: 1.3rem;
+    padding: 0 0 10px;
+}
+
+#details {
+    width: 250px;
+    min-height: 40px;
+    background: #DB8876; 
+    position: fixed;
+    bottom: 0;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px 0;
+}
+
+.like {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.heart {
+    width: 20px;
+    padding: 0;
+    margin: 0;
+    margin: 0 10px 0;
+}
+
+#album {
+    margin-top: 20px;
+    padding: 0px 100px;
+}
+
+#sort {
+    display: flex;
+}
+
+#sort__title {
+    width: auto;
+    margin-right: 50px;
+}
+
+.sort {
+    background: #901C1C;
+    color: white;
+    border-radius: 5px;
+}
+
+#sort__menu {   
+    display: none;
+}
+
+.sort__menu__item {
+    border-top: white solid 1px;
+    padding: 15px 10px;
+    margin: -1px 10px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.fa-chevron {
+    width: 15px;
+    margin-left: 10px;
+}
+
+#chevron1 { 
+    display: block;
+}
+
+#chevron2 {
+    display: none;
+}
+
+#chevron3 {
+    display: none;
+}
+
+#chevron4 {
+    display: none;
+}
+
+#chevron5 {
+    display: none;
+}
+
+#chevron6 {
+    display: none;
+}
+
+#choice1 {
+    order: 0;
+}
+
+#choice2 {
+    order: 0;
+}
+
+#choice3 {
+    order: 0;
+}
+
+.sort__menu__ul {
+    display: flex;
+    flex-direction: column;
+}
+
+#sort__button {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0;
 }
