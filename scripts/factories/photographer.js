@@ -1,8 +1,7 @@
 function photographerFactory(data) {
     const { name, portrait, city, country, tagline, price, id } = data;
     const picture = `assets/photographers/id_photos/${portrait}`;
-    const test = new URL("/photographer.html?id=" + id,window.location.href);
-    let truc = true;
+    const href = new URL("/photographer.html?id=" + id,window.location.href);
 
     function getUserCard() {
 
@@ -23,7 +22,7 @@ function photographerFactory(data) {
 
         //Adding attributes
         description.setAttribute("aria-label", name + "description");
-        linkBox.setAttribute("href", test);
+        linkBox.setAttribute("href", href);
         linkBox.setAttribute("aria-label", name);
         img.setAttribute("src", picture);
         description.setAttribute("tabindex", "0");
@@ -70,7 +69,7 @@ function photographerFactory(data) {
 
         //Adding classes
         location.classList.add("location");
-        like.classList.add("like");
+        like.classList.add("mediaLike");
         heart.classList.add("heart");
 
         //Adding attributes
