@@ -76,8 +76,8 @@ function photographerFactory(data) {
         img.setAttribute("src", picture);
         img.setAttribute("tabindex", 0);
         img.setAttribute("alt", "");
-        h2.setAttribute("tabindex", 0 );
-        h2.setAttribute("tabindex", 0 );
+        h2.setAttribute("tabindex", 0);
+        h2.setAttribute("tabindex", 0);
         descriptionDetails.setAttribute("tabindex", 0);
         details.setAttribute("tabindex", 0);
 

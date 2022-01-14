@@ -1,6 +1,10 @@
 const queryString = window.location.search;
 const urlId = new URLSearchParams(queryString).get("id");
 let sort = 1;
+let medias = [];
+let photographerName = "";
+let cpt = 0;
+let actualMedia = 0;
 
 //DOM elements
 const choice1 = document.getElementById("choice1");
@@ -14,6 +18,29 @@ const sortMenu = document.getElementById("sort__menu");
 const sortButtonText = document.getElementById("sort__button__text");
 
 //Adding events
+document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowRight") {
+        right();
+    }
+    if (e.key === "ArrowLeft") {
+        left();
+    }
+    if (e.key === "Escape") {
+        closeLightbox();
+    }
+});
+document.getElementById("right-arrow").addEventListener("click", right);
+document.getElementById("right-arrow").addEventListener("keyup", function(e) {
+    if (e.key === 'Enter') {
+        right();
+    }
+});
+document.getElementById("left-arrow").addEventListener("click", left);
+document.getElementById("left-arrow").addEventListener("keyup", function(e) {
+    if (e.key === 'Enter') {
+        left();
+    }
+});
 choice1.addEventListener("click", sortingMenu1);
 choice2.addEventListener("click", sortingMenu2);
 choice3.addEventListener("click", sortingMenu3);
@@ -84,7 +111,8 @@ function sortingMenu3() {
     title();
 }
 
-function getPhotographer() {
+async function getPhotographer() {
+    initMedias();
     return fetch("data/photographers.json")
     .then(response => response.json())
     .then(function(data) {
@@ -98,16 +126,16 @@ function getPhotographer() {
 }
 
 async function numberOfLikes() {
-    let cpt = 0;
+    let cptLikes = 0;
     return fetch("data/photographers.json")
     .then(response => response.json())
     .then(function(data) {
         for (let i = 0; i < data.media.length; i++) {
             if (urlId == data.media[i].photographerId) {
-                cpt+= data.media[i].likes;
+                cptLikes+= data.media[i].likes;
             }
         }
-        return cpt;
+        return cptLikes;
     });
 }
 
@@ -157,6 +185,7 @@ function sortMediasbyTitle(medias) {
 }
 
 async function initMedias() {
+    photographerName = await getName(urlId);
     medias = await getMedias();
     medias = sortMediasbyPopularity(medias);
     displayMedias(medias);
@@ -167,6 +196,7 @@ async function initMedias() {
     likeBox.innerText = likes;
     likeBox.style.order = "-1";
     mediaLike[0].appendChild(likeBox);
+    document.getElementById("contact_modal").setAttribute("aria-label", "Contact me " + photographerName);
 }
 
 async function popularity() {
@@ -175,6 +205,7 @@ async function popularity() {
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getMedias();
         medias = sortMediasbyPopularity(medias);
+        cpt = 0;
         displayMedias(medias);
     }
 }
@@ -185,6 +216,7 @@ async function date() {
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getMedias();
         medias = sortMediasbyDate(medias);
+        cpt = 0;
         displayMedias(medias);
     }
 }
@@ -195,6 +227,7 @@ async function title() {
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getMedias();
         medias = sortMediasbyTitle(medias);
+        cpt = 0;
         displayMedias(medias);
     }
 }
@@ -208,12 +241,12 @@ async function displayMedias(medias) {
 async function displayMedia(media) {
 
     let thumbSrc = "";
-    let likes = 0;
+    const mediaNumber = cpt;
 
     if (media.hasOwnProperty("image")) {
-        thumbSrc = "/assets/photographers/" + await getName(urlId) + "/" + media.image;
+        thumbSrc = "/assets/photographers/" + photographerName + "/" + media.image;
     } else {
-        thumbSrc = "/assets/photographers/" + await getName(urlId) + "/" + media.video;
+        thumbSrc = "/assets/photographers/" + photographerName + "/" + media.video;
     }
 
     //DOM Elements
@@ -231,13 +264,15 @@ async function displayMedia(media) {
     const likeCpt = document.createElement("p");
     const heart1 = document.createElement("svg");
     const heart2 = document.createElement("svg");
+    let title = "";
 
     //Adding Content
     if (media.hasOwnProperty("title")) {
-        h2.textContent = media.title;
+        title = media.title;
     } else {
-        h2.textContent = media.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");
+        title = media.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");
     }
+    h2.textContent = title;
     likeCpt.textContent = media.likes;
     heart1.innerHTML = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="heart" class="heart1 heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"></path></svg>'; 
     heart2.innerHTML = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="heart" class="heart2 heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"></path></svg>'; 
@@ -253,6 +288,13 @@ async function displayMedia(media) {
     thumb.setAttribute("src", thumbSrc);
     heart1.style.display = "block";
     heart2.style.display = "none";
+    thumb.setAttribute("tabindex", 0);
+    heart1.setAttribute("tabindex", 0);
+    heart2.setAttribute("tabindex", 0);
+    thumb.setAttribute("aria-label", "Agrandir" + title);
+    heart1.setAttribute("aria-label", "Ajouter un like, actuellement" + likeCpt.textContent + "likes");
+    heart2.setAttribute("aria-label", "Enlever votre like, actuellement" + likeCpt.textContent + "likes");
+    thumb.style.cursor = "pointer";
 
     //Adding Nodes
     like.appendChild(likeCpt);
@@ -264,9 +306,27 @@ async function displayMedia(media) {
     mediaCard.appendChild(mediaDescription);
     albumPictures.appendChild(mediaCard);
 
+    cpt++;
+
     //Adding Events
     heart1.addEventListener("click", addLike);
     heart2.addEventListener("click", lessenLike);
+    heart1.addEventListener("keyup", function(e) {
+        if (e.key === 'Enter') {
+            addLike();
+        }
+    });
+    heart2.addEventListener("keyup", function(e) {
+        if (e.key === 'Enter') {
+            lessenLike();
+        }
+    });
+    thumb.addEventListener("click", openLightbox);
+    thumb.addEventListener("keyup", function(e) {
+        if (e.key === 'Enter') {
+            openLightbox();
+        }
+    });
 
     function addLike() {
         heart1.style.display = "none";
@@ -283,6 +343,66 @@ async function displayMedia(media) {
         likeBox.innerText = parseInt(likeBox.textContent) - 1;
         likeCpt.innerText = parseInt(likeCpt.textContent) - 1;
     }
+
+    function openLightbox() {
+        actualMedia = mediaNumber;
+        const lightboxModal = document.getElementById("lightbox-modal");
+        const main = document.getElementById("main");
+        const media = document.getElementById("media");
+        const header = document.getElementById("header");
+        lightboxModal.focus();
+        if (media !== undefined && media !== null) {
+            media.parentNode.removeChild(media);
+        }
+        lightbox(medias[actualMedia]);
+        lightboxModal.style.display = "flex";
+        main.style.display = "none";
+        header.style.display = "none";
+    }
+}
+
+function right() {
+    const media = document.getElementById("media");
+    if (media !== undefined && media !== null) {
+        media.parentNode.removeChild(media);
+    }
+    if (actualMedia < medias.length - 1) {
+        lightbox(medias[actualMedia + 1]);
+        actualMedia++;
+    } else {
+        lightbox(medias[0]);
+        actualMedia = 0;
+    }
+}
+
+function left() {
+    const media = document.getElementById("media");
+    if (media !== undefined && media !== null) {
+        media.parentNode.removeChild(media);
+    }
+    if (actualMedia != 0) {
+        lightbox(medias[actualMedia - 1]);
+        actualMedia--;
+    } else {
+        lightbox(medias[medias.length - 1]);
+        actualMedia = medias.length - 1;
+    }
+}
+
+document.getElementById("close").addEventListener("click", closeLightbox);
+document.getElementById("close").addEventListener("keyup", function(e) {
+    if (e.key === 'Enter') {
+        closeLightbox();
+    }
+});
+
+function closeLightbox() {
+    const lightboxModal = document.getElementById("lightbox-modal");
+    const main = document.getElementById("main");
+    const header = document.getElementById("header");
+    lightboxModal.style.display = "none";
+    main.style.display = "block";
+    header.style.display = "flex";
 }
 
 async function getName(id) {
@@ -297,5 +417,26 @@ async function getName(id) {
     });
 }
 
+function lightbox(data) {
+    const mediaTitle = document.getElementById("media-title");
+    const mediaContainer = document.getElementById("media-container");
+    let media = "";
+    if (data.hasOwnProperty("image")) {
+        media = document.createElement("img");
+    } else {
+        media = document.createElement("video");
+    }
+    media.id = "media";
+    if (data.hasOwnProperty("image")) {
+        media.setAttribute("src", "/assets/photographers/" + photographerName + "/" + data.image);
+        mediaTitle.textContent = data.title;
+    } else {
+        media.setAttribute("src", "/assets/photographers/" + photographerName + "/" + data.video);
+        media.setAttribute("type", "video/mp4");
+        media.setAttribute("controls", "");
+        mediaTitle.textContent = data.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");;
+    }
+    mediaContainer.appendChild(media);
+}
+
 getPhotographer();
-initMedias();

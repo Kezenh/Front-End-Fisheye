@@ -270,3 +270,69 @@ form input {
 .heart1 {
     cursor: pointer;
 }
+
+.lightbox-icon {
+    height: 50px;
+    color: #901C1C;
+}
+
+#lightbox-modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: white;
+    display: none;
+    justify-content: space-between;
+    padding: 50px 75px;
+    align-items: center;
+}
+
+#media-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#media {
+    width: 1280px;
+    height: 720px;
+    object-fit: scale-down;
+    order: -1;
+}
+
+#close {
+    position: absolute;
+    right: 75px;
+    top: 50px;
+    cursor: pointer;
+}
+
+#media-title {
+    margin-top: 20px;
+    color: #901C1C;
+    font-size: 1.5rem;
+}
+
+#right-arrow {
+    cursor: pointer;
+}
+
+#left-arrow {
+    cursor: pointer;
+}
+
+#contact_modal {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(155, 155, 155, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#send {
+    margin-top: 40px;
+}
