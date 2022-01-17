@@ -12,27 +12,27 @@ const firstError = document.getElementById("firstError");
 const lastError = document.getElementById("lastError");
 const emailError = document.getElementById("emailError");
 
-send.addEventListener("click", sendContact);
-firstName.addEventListener("input", firstReset);
-lastName.addEventListener("input", lastReset);
-email.addEventListener("input", emailReset);
+send.addEventListener("click", validityCheck);
+firstName.addEventListener("input", resetFirstNameInput);
+lastName.addEventListener("input", resetLastNameInput);
+email.addEventListener("input", resetEmailInput);
 
-function firstReset() {
+function resetFirstNameInput() {
     firstError.innerText = "";
     firstError.setAttribute("role", "");
 }
 
-function lastReset() {
+function resetLastNameInput() {
     lastError.innerText = "";
     lastError.setAttribute("role", "");
 }
 
-function emailReset() {
+function resetEmailInput() {
     emailError.innerText = "";
     emailError.setAttribute("role", "");
 }
 
-function sendContact() {
+function validityCheck() {
     let check = true;
     if (!(regexName.test(firstName.value))) {
         check = false;
@@ -54,17 +54,18 @@ function sendContact() {
         console.log("Nom : " + lastName.value);
         console.log("Email : " + email.value);
         console.log("Message : " + message.value);
-        closeModal();
+        closeContactModal();
     }
 }
 
-function displayModal() {
+export function displayContactModal() {
     main.setAttribute("aria-hidden", "true");
     header.setAttribute("aria-hidden", "true");
 	modal.style.display = "flex";
+    document.getElementById("firstName").focus();
 }
 
-function closeModal() {
+export function closeContactModal() {
     modal.style.display = "none";
     main.setAttribute("aria-hidden", "false");
     header.setAttribute("aria-hidden", "false");

@@ -1,4 +1,4 @@
-function photographerFactory(data) {
+export function photographerFactory(data) {
     const { name, portrait, city, country, tagline, price, id } = data;
     const picture = `assets/photographers/id_photos/${portrait}`;
     const href = new URL("/photographer.html?id=" + id,window.location.href);

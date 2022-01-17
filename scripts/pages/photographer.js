@@ -1,3 +1,7 @@
+import { photographerFactory } from "../factories/photographer.js";
+import { displayContactModal } from "../utils/contactForm.js";
+import { closeContactModal } from "../utils/contactForm.js";
+
 const queryString = window.location.search;
 const urlId = new URLSearchParams(queryString).get("id");
 let sort = 1;
@@ -18,61 +22,63 @@ const sortMenu = document.getElementById("sort__menu");
 const sortButtonText = document.getElementById("sort__button__text");
 
 //Adding events
+document.getElementById("openContact").addEventListener("click", displayContactModal);
+document.getElementById("closeContact").addEventListener("click", closeContactModal);
 document.addEventListener("keydown", function(e) {
-    if (e.key === "ArrowRight") {
-        right();
+    if (e.key === "ArrowgoToNextMedia") {
+        goToNextMedia();
     }
-    if (e.key === "ArrowLeft") {
-        left();
+    if (e.key === "ArrowgoToPreviousMedia") {
+        goToPreviousMedia();
     }
     if (e.key === "Escape") {
         closeLightbox();
     }
 });
-document.getElementById("right-arrow").addEventListener("click", right);
+document.getElementById("right-arrow").addEventListener("click", goToNextMedia);
 document.getElementById("right-arrow").addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        right();
+        goToNextMedia();
     }
 });
-document.getElementById("left-arrow").addEventListener("click", left);
+document.getElementById("left-arrow").addEventListener("click", goToPreviousMedia);
 document.getElementById("left-arrow").addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        left();
+        goToPreviousMedia();
     }
 });
-choice1.addEventListener("click", sortingMenu1);
-choice2.addEventListener("click", sortingMenu2);
-choice3.addEventListener("click", sortingMenu3);
-sortButton.addEventListener("click", openSort);
+choice1.addEventListener("click", sortMenuByPopularity);
+choice2.addEventListener("click", sortMenuByDate);
+choice3.addEventListener("click", sortMenuByTitle);
+sortButton.addEventListener("click", openSortingMenu);
 choice1.addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        sortingMenu1();
+        sortMenuByPopularity();
     }
 });
 choice2.addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        sortingMenu2();
+        sortMenuByDate();
     }
 });
 choice3.addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        sortingMenu3();
+        sortMenuByTitle();
     }
 });
 sortButton.addEventListener("keyup", function(e) {
     if (e.key === 'Enter') {
-        openSort();
+        openSortingMenu();
     }
 });
 
 //Functions
-function openSort() {
+function openSortingMenu() {
     sortMenu.style.display = "block";
     sortButton.style.display = "none";
 }
 
-function sortingMenu1() {
+function sortMenuByPopularity() {
     choice1.style.order = "-1";
     choice2.style.order = "0";
     choice3.style.order = "0";
@@ -85,7 +91,7 @@ function sortingMenu1() {
     popularity();
 }
 
-function sortingMenu2() {
+function sortMenuByDate() {
     choice1.style.order = "0";
     choice2.style.order = "-1";
     choice3.style.order = "0";
@@ -98,7 +104,7 @@ function sortingMenu2() {
     date();
 }
 
-function sortingMenu3() {
+function sortMenuByTitle() {
     choice1.style.order = "0";
     choice2.style.order = "0";
     choice3.style.order = "-1";
@@ -111,7 +117,7 @@ function sortingMenu3() {
     title();
 }
 
-async function getPhotographer() {
+async function getPhotographerDatas() {
     initMedias();
     return fetch("data/photographers.json")
     .then(response => response.json())
@@ -125,7 +131,7 @@ async function getPhotographer() {
     });
 }
 
-async function numberOfLikes() {
+async function getTotalNumberOfLikes() {
     let cptLikes = 0;
     return fetch("data/photographers.json")
     .then(response => response.json())
@@ -139,7 +145,7 @@ async function numberOfLikes() {
     });
 }
 
-async function getMedias() {
+async function getPhotosAndVideos() {
     let arr = [];
     return fetch("data/photographers.json")
     .then(response => response.json())
@@ -169,15 +175,21 @@ function sortMediasbyDate(medias) {
 
 function sortMediasbyTitle(medias) {
     medias.sort(function (a,b) {
+        // eslint-disable-next-line no-prototype-builtins
         if (a.hasOwnProperty("title")) {
+            // eslint-disable-next-line no-prototype-builtins
             if (b.hasOwnProperty("title")) {
                 return a.title.localeCompare(b.title);
             } else {
+                // eslint-disable-next-line no-useless-escape
                 return a.title.localeCompare(b.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,""));
             }
+        // eslint-disable-next-line no-prototype-builtins
         } else if (b.hasOwnProperty("title")) {
+            // eslint-disable-next-line no-useless-escape
             return a.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"").localeCompare(b.title);
         } else {
+            // eslint-disable-next-line no-useless-escape
             return a.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"").localeCompare(b.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,""));
         }    
     });
@@ -185,11 +197,11 @@ function sortMediasbyTitle(medias) {
 }
 
 async function initMedias() {
-    photographerName = await getName(urlId);
-    medias = await getMedias();
+    photographerName = await getPhotographerName(urlId);
+    medias = await getPhotosAndVideos();
     medias = sortMediasbyPopularity(medias);
     displayMedias(medias);
-    let likes = await numberOfLikes();
+    let likes = await getTotalNumberOfLikes();
     const mediaLike = document.getElementsByClassName("mediaLike");
     const likeBox = document.createElement("p");
     likeBox.id = "likeBox";
@@ -203,7 +215,7 @@ async function popularity() {
     if (sort != 1) {
         sort = 1;
         document.getElementById("album__pictures").innerHTML = "";
-        medias = await getMedias();
+        medias = await getPhotosAndVideos();
         medias = sortMediasbyPopularity(medias);
         cpt = 0;
         displayMedias(medias);
@@ -214,7 +226,7 @@ async function date() {
     if (sort != 2) {
         sort = 2;
         document.getElementById("album__pictures").innerHTML = "";
-        medias = await getMedias();
+        medias = await getPhotosAndVideos();
         medias = sortMediasbyDate(medias);
         cpt = 0;
         displayMedias(medias);
@@ -225,7 +237,7 @@ async function title() {
     if (sort != 3) {
         sort = 3;
         document.getElementById("album__pictures").innerHTML = "";
-        medias = await getMedias();
+        medias = await getPhotosAndVideos();
         medias = sortMediasbyTitle(medias);
         cpt = 0;
         displayMedias(medias);
@@ -243,6 +255,7 @@ async function displayMedia(media) {
     let thumbSrc = "";
     const mediaNumber = cpt;
 
+    // eslint-disable-next-line no-prototype-builtins
     if (media.hasOwnProperty("image")) {
         thumbSrc = "/assets/photographers/" + photographerName + "/" + media.image;
     } else {
@@ -255,6 +268,7 @@ async function displayMedia(media) {
     const mediaDescription = document.createElement("div");
     const h2 = document.createElement("h2");
     let thumb;
+    // eslint-disable-next-line no-prototype-builtins
     if (media.hasOwnProperty("image")) {
         thumb = document.createElement("img");
     } else {
@@ -267,9 +281,11 @@ async function displayMedia(media) {
     let title = "";
 
     //Adding Content
+    // eslint-disable-next-line no-prototype-builtins
     if (media.hasOwnProperty("title")) {
         title = media.title;
     } else {
+        // eslint-disable-next-line no-useless-escape
         title = media.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");
     }
     h2.textContent = title;
@@ -361,7 +377,7 @@ async function displayMedia(media) {
     }
 }
 
-function right() {
+function goToNextMedia() {
     const media = document.getElementById("media");
     if (media !== undefined && media !== null) {
         media.parentNode.removeChild(media);
@@ -375,7 +391,7 @@ function right() {
     }
 }
 
-function left() {
+function goToPreviousMedia() {
     const media = document.getElementById("media");
     if (media !== undefined && media !== null) {
         media.parentNode.removeChild(media);
@@ -405,7 +421,7 @@ function closeLightbox() {
     header.style.display = "flex";
 }
 
-async function getName(id) {
+async function getPhotographerName(id) {
     return fetch("./../data/photographers.json")
     .then(response => response.json())
     .then(function(data) {
@@ -421,12 +437,14 @@ function lightbox(data) {
     const mediaTitle = document.getElementById("media-title");
     const mediaContainer = document.getElementById("media-container");
     let media = "";
+    // eslint-disable-next-line no-prototype-builtins
     if (data.hasOwnProperty("image")) {
         media = document.createElement("img");
     } else {
         media = document.createElement("video");
     }
     media.id = "media";
+    // eslint-disable-next-line no-prototype-builtins
     if (data.hasOwnProperty("image")) {
         media.setAttribute("src", "/assets/photographers/" + photographerName + "/" + data.image);
         mediaTitle.textContent = data.title;
@@ -434,9 +452,10 @@ function lightbox(data) {
         media.setAttribute("src", "/assets/photographers/" + photographerName + "/" + data.video);
         media.setAttribute("type", "video/mp4");
         media.setAttribute("controls", "");
-        mediaTitle.textContent = data.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");;
+        // eslint-disable-next-line no-useless-escape
+        mediaTitle.textContent = data.video.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g," ").replace(/mp4/g,"");
     }
     mediaContainer.appendChild(media);
 }
 
-getPhotographer();
+getPhotographerDatas();

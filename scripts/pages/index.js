@@ -1,3 +1,5 @@
+import { photographerFactory } from "../factories/photographer.js";
+
 async function getPhotographers() {
     return fetch("./../data/photographers.json")
     .then(response => response.json())
@@ -14,12 +16,12 @@ async function displayData(photographers) {
         const userCardDOM = photographerModel.getUserCard();
         photographersSection.appendChild(userCardDOM);
     });
-};
+}
 
 async function init() {
     // Récupère les datas des photographes
     const photographers = await getPhotographers();
     displayData(photographers);
-};
+}
     
 init();
