@@ -4,10 +4,10 @@ import { closeContactModal } from "../utils/contactForm.js";
 
 const queryString = window.location.search;
 const urlId = new URLSearchParams(queryString).get("id");
-let sort = 1;
+let sortState = 1;
 let medias = [];
 let photographerName = "";
-let cpt = 0;
+let mediaCounter = 0;
 let actualMedia = 0;
 
 //DOM elements
@@ -146,16 +146,16 @@ async function getTotalNumberOfLikes() {
 }
 
 async function getPhotosAndVideos() {
-    let arr = [];
+    let medias = [];
     return fetch("data/photographers.json")
     .then(response => response.json())
     .then(function(data) {
         for (let i = 0; i < data.media.length; i++) {
             if (urlId == data.media[i].photographerId) {
-                arr.push(data.media[i]);
+                medias.push(data.media[i]);
             }
         }
-        return arr;
+        return medias;
     });
 }
 
@@ -212,34 +212,34 @@ async function initMedias() {
 }
 
 async function popularity() {
-    if (sort != 1) {
-        sort = 1;
+    if (sortState != 1) {
+        sortState = 1;
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getPhotosAndVideos();
         medias = sortMediasbyPopularity(medias);
-        cpt = 0;
+        mediaCounter = 0;
         displayMedias(medias);
     }
 }
 
 async function date() {
-    if (sort != 2) {
-        sort = 2;
+    if (sortState != 2) {
+        sortState = 2;
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getPhotosAndVideos();
         medias = sortMediasbyDate(medias);
-        cpt = 0;
+        mediaCounter = 0;
         displayMedias(medias);
     }
 }
 
 async function title() {
-    if (sort != 3) {
-        sort = 3;
+    if (sortState != 3) {
+        sortState = 3;
         document.getElementById("album__pictures").innerHTML = "";
         medias = await getPhotosAndVideos();
         medias = sortMediasbyTitle(medias);
-        cpt = 0;
+        mediaCounter = 0;
         displayMedias(medias);
     }
 }
@@ -253,7 +253,7 @@ async function displayMedias(medias) {
 async function displayMedia(media) {
 
     let thumbSrc = "";
-    const mediaNumber = cpt;
+    const mediaNumber = mediaCounter;
 
     // eslint-disable-next-line no-prototype-builtins
     if (media.hasOwnProperty("image")) {
@@ -322,7 +322,7 @@ async function displayMedia(media) {
     mediaCard.appendChild(mediaDescription);
     albumPictures.appendChild(mediaCard);
 
-    cpt++;
+    mediaCounter++;
 
     //Adding Events
     heart1.addEventListener("click", addLike);
