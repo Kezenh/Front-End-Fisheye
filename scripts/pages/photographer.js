@@ -25,10 +25,10 @@ const sortButtonText = document.getElementById("sort__button__text");
 document.getElementById("openContact").addEventListener("click", displayContactModal);
 document.getElementById("closeContact").addEventListener("click", closeContactModal);
 document.addEventListener("keydown", function(e) {
-    if (e.key === "ArrowgoToNextMedia") {
+    if (e.key === "ArrowRight") {
         goToNextMedia();
     }
-    if (e.key === "ArrowgoToPreviousMedia") {
+    if (e.key === "ArrowLeft") {
         goToPreviousMedia();
     }
     if (e.key === "Escape") {
